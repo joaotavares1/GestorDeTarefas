@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-// Import necessário para a persistência local
 import 'package:shared_preferences/shared_preferences.dart'; 
 
 import 'tela_cadastro.dart';
@@ -16,14 +15,14 @@ class _TelaLoginState extends State<TelaLogin> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _senhaController = TextEditingController();
 
-  // Bônus: Carregar o email salvo no initState
+
   @override
   void initState() {
     super.initState();
     _carregarEmailSalvo();
   }
 
-  // Método assíncrono para carregar o email
+  
   void _carregarEmailSalvo() async {
     final prefs = await SharedPreferences.getInstance();
     final emailSalvo = prefs.getString('email');
@@ -40,7 +39,7 @@ class _TelaLoginState extends State<TelaLogin> {
     super.dispose();
   }
 
-  // A função agora é assíncrona para usar o await (Atenção: Função Assíncrona)
+
   void _fazerLogin() async {
     final email = _emailController.text;
     final senha = _senhaController.text;
@@ -48,12 +47,11 @@ class _TelaLoginState extends State<TelaLogin> {
     print('Email digitado: $email');
     print('Senha digitada: $senha');
     
-    // Passo 2: Salvar no Login - Salvar o email antes de navegar
-    // A sintaxe usada na imagem é o modelo:
+
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString('email', _emailController.text); 
     
-    // Navegação após salvar
+   
     Navigator.push(
       context,
       MaterialPageRoute(
