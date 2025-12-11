@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
-import 'tela_cadastro.dart'; 
+// Import necessário para a persistência local
+import 'package:shared_preferences/shared_preferences.dart'; 
 
+import 'tela_cadastro.dart';
+import 'tela_home.dart'; 
 
 class TelaLogin extends StatefulWidget {
   const TelaLogin({super.key});
@@ -9,13 +12,27 @@ class TelaLogin extends StatefulWidget {
   State<TelaLogin> createState() => _TelaLoginState();
 }
 
-
 class _TelaLoginState extends State<TelaLogin> {
- 
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _senhaController = TextEditingController();
 
- 
+  // Bônus: Carregar o email salvo no initState
+  @override
+  void initState() {
+    super.initState();
+    _carregarEmailSalvo();
+  }
+
+  // Método assíncrono para carregar o email
+  void _carregarEmailSalvo() async {
+    final prefs = await SharedPreferences.getInstance();
+    final emailSalvo = prefs.getString('email');
+    
+    if (emailSalvo != null) {
+      _emailController.text = emailSalvo;
+    }
+  }
+
   @override
   void dispose() {
     _emailController.dispose();
@@ -23,16 +40,26 @@ class _TelaLoginState extends State<TelaLogin> {
     super.dispose();
   }
 
-
-  void _fazerLogin() {
-    
+  // A função agora é assíncrona para usar o await (Atenção: Função Assíncrona)
+  void _fazerLogin() async {
     final email = _emailController.text;
     final senha = _senhaController.text;
     
     print('Email digitado: $email');
     print('Senha digitada: $senha');
     
-   
+    // Passo 2: Salvar no Login - Salvar o email antes de navegar
+    // A sintaxe usada na imagem é o modelo:
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('email', _emailController.text); 
+    
+    // Navegação após salvar
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const TelaHome(),
+      ),
+    );
   }
 
   @override
@@ -55,7 +82,6 @@ class _TelaLoginState extends State<TelaLogin> {
             
             const SizedBox(height: 30), 
 
-            
             TextField(
               controller: _emailController,
               decoration: const InputDecoration(
@@ -67,28 +93,25 @@ class _TelaLoginState extends State<TelaLogin> {
             
             const SizedBox(height: 10), 
             
-          
             TextField(
               controller: _senhaController,
               decoration: const InputDecoration(
                 labelText: 'Senha',
                 border: OutlineInputBorder(),
               ),
-              obscureText: true, 
+              obscureText: true,
             ),
             
             const SizedBox(height: 20), 
             
-            
             SizedBox(
               width: double.infinity, 
               child: ElevatedButton(
-                onPressed: _fazerLogin, 
+                onPressed: _fazerLogin,
                 child: const Text('Entrar'),
               ),
             ),
 
-           
             TextButton(
               onPressed: () {
                 Navigator.push(
